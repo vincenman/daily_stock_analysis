@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- [修复] `FinnhubFetcher` / `AlphaVantageFetcher` 补充 `is_available()` 运行态探针，已配置 API Key 时数据中心不再把这两个 provider 及其美股日线数据集误报为 `unknown`。
 - [文档] 新增 `README_DETAIL.md`，系统化说明程序架构、运行模式、数据流、配置、通知、调度与 CI/CD，并附 Mermaid 流程图。
 - [修复] 港股信托/房托/合订证券（如 `06823` 香港电讯-SS、`00823` 领展房产基金）不在 Tushare `hk_basic` 返回范围内，导致 Web 自动补全搜不到这些代码：新增 `scripts/stock_index_seeds/stock_list_hk_trust.csv`（11 只），重建与 `--index-only` 两条索引生成路径都会合并（已存在代码自动跳过），并补充 `STOCK_NAME_MAP` / `STOCK_ENGLISH_NAME_MAP` 名称映射。
 - [文档] 新增 Zeabur 部署指南 2026-10 修订版：按当前控制台入口重写 GitHub 导入流程，补充现成镜像与源码构建两条路径、`zbpack.json` / `ZBPACK_DOCKERFILE_PATH` 的 Dockerfile 路径配置、启动命令覆盖与 `ADMIN_AUTH_ENABLED` 提示；旧版 `docs/docker/zeabur-deployment.md` 标注过时并保留兼容文档契约校验。

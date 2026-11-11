@@ -12,6 +12,7 @@ Web 数据中心位于 `/data`，用于只读查看数据源能力、数据集�
 ## 状态边界
 
 - 页面不会根据“已知 provider 名称”把冷启动状态推断为 `ok`；后端返回 `unknown` 时原样展示。
+- Provider 的 `unknown` 通常意味着该 fetcher 没有实现可用性探针（`is_available_for_request` / `is_available` / `_is_available` / `_available`），而不是 API Key 缺失。已配置 Key 却显示 `unknown` 时，先确认对应 fetcher 是否实现了探针；`FinnhubFetcher` 与 `AlphaVantageFetcher` 已实现 `is_available()`。
 - 页面不会把 Provider 的 `markets` 与 `datasets` 计算笛卡尔积；精确支持范围以 `dataset_markets` 为准。
 - 多市场数据集使用不同 provider 时，顶层 `source` 合法地为空；页面会读取 `coverage.markets`，按市场展示实际来源，而不是显示成 `--`。
 - Overview 请求失败时整页显示可重试错误；接口成功但 provider/dataset 均为空时显示 empty 状态。

@@ -35,6 +35,10 @@ class AlphaVantageFetcher(BaseFetcher):
         if not self._api_key:
             logger.debug("[AlphaVantage] API key not configured, fetcher disabled")
 
+    def is_available(self) -> bool:
+        """Report whether the fetcher has the credentials it needs to run."""
+        return bool(self._api_key)
+
     def _is_us_stock(self, stock_code: str) -> bool:
         return is_us_stock_code(stock_code)
 

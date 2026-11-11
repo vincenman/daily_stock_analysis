@@ -50,6 +50,8 @@ Web/API 提供 `GET /api/v1/data/overview` 和等价别名 `GET /api/v1/data/cap
 
 其中 `unknown` 表示尚未执行运行态探测，`unconfigured` 表示缺少必要配置，`degraded` 表示前置优先源不可用但后续源仍可消费。选股 source health 在冷启动、成功数和失败数都为 0 时保持 `unknown`，不会把尚未调用的数据源提前标成 `ok`。后续 Data Center 可以在同一结构上追加 last_success、coverage、cooldown 和运行历史，不需要各页面各自维护数据质量口径。
 
+Provider 的 `status` 由 fetcher 自身的可用性探针决定：`DataCapabilityService` 依次尝试 `is_available_for_request(capability)`、`is_available()`、`_is_available()`，再回退到 `_available` 属性；三者都不存在时保持 `unknown` 并附带 `runtime_probe_not_performed`。因此新增 provider 适配器时应实现 `is_available()`（或 `is_available_for_request()`）返回凭据是否齐备，否则即使 API Key 已配置，数据中心也会一直显示 `unknown`。`FinnhubFetcher` 与 `AlphaVantageFetcher` 已按此约定实现 `is_available()`，配置 Key 后其 provider 状态为 `ok`，美股 `kline.daily` coverage 也能正常解析到 `finnhub`。
+
 ## 总体链路图
 
 ```mermaid

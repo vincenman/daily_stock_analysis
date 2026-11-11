@@ -192,6 +192,26 @@ class TestAlphaVantageFetcherInit(unittest.TestCase):
         self.assertIsNone(f._api_key)
 
 
+class TestAlphaVantageFetcherAvailability(unittest.TestCase):
+    """Test the runtime availability probe consumed by the data capability overview."""
+
+    @patch('src.config.get_config')
+    def test_is_available_true_with_key(self, mock_config):
+        mock_config.return_value = MagicMock(alphavantage_api_key='AVTEST123')
+        from data_provider.alphavantage_fetcher import AlphaVantageFetcher
+        f = AlphaVantageFetcher()
+        self.assertTrue(f.is_available())
+
+    @patch.dict(os.environ, {}, clear=False)
+    @patch('src.config.get_config')
+    def test_is_available_false_without_key(self, mock_config):
+        os.environ.pop('ALPHAVANTAGE_API_KEY', None)
+        mock_config.return_value = MagicMock(alphavantage_api_key=None)
+        from data_provider.alphavantage_fetcher import AlphaVantageFetcher
+        f = AlphaVantageFetcher()
+        self.assertFalse(f.is_available())
+
+
 class TestAlphaVantageFetcherNewestFirst(unittest.TestCase):
     """Verify pct_chg is correct when API returns newest-first data."""
 

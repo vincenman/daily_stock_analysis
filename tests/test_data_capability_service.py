@@ -894,6 +894,32 @@ def test_daily_capability_contract_includes_market_specific_daily_fetchers() -> 
     assert "kline.daily" in _provider(overview, "alphavantage")["datasets"]
 
 
+def test_us_daily_providers_report_ok_when_their_fetchers_expose_availability() -> None:
+    """Finnhub/AlphaVantage expose is_available(), so a configured key resolves to ok."""
+    from data_provider.alphavantage_fetcher import AlphaVantageFetcher
+    from data_provider.finnhub_fetcher import FinnhubFetcher
+
+    finnhub = FinnhubFetcher()
+    finnhub._api_key = "key"
+    alphavantage = AlphaVantageFetcher()
+    alphavantage._api_key = "key"
+
+    service = DataCapabilityService(
+        config=_config(finnhub_api_key="key", alphavantage_api_key="key"),
+        fetcher_manager=_FetcherManager([finnhub, alphavantage]),
+    )
+
+    overview = service.get_overview()
+
+    assert _provider(overview, "finnhub")["status"] == "ok"
+    assert _provider(overview, "finnhub")["warnings"] == []
+    assert _provider(overview, "alphavantage")["status"] == "ok"
+    assert _provider(overview, "alphavantage")["warnings"] == []
+    us_coverage = _dataset(overview, "kline.daily")["coverage"]["markets"]["us"]
+    assert us_coverage["status"] == "ok"
+    assert us_coverage["source"] == "finnhub"
+
+
 def test_disabled_runtime_features_surface_dataset_quality_warnings() -> None:
     manager = _FetcherManager([_Fetcher("AkshareFetcher", 1), _Fetcher("YfinanceFetcher", 4)])
     service = DataCapabilityService(

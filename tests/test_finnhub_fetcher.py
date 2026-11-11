@@ -188,6 +188,26 @@ class TestFinnhubFetcherInit(unittest.TestCase):
         self.assertIsNone(f._api_key)
 
 
+class TestFinnhubFetcherAvailability(unittest.TestCase):
+    """Test the runtime availability probe consumed by the data capability overview."""
+
+    @patch('src.config.get_config')
+    def test_is_available_true_with_key(self, mock_config):
+        mock_config.return_value = MagicMock(finnhub_api_key='sk-test-123')
+        from data_provider.finnhub_fetcher import FinnhubFetcher
+        f = FinnhubFetcher()
+        self.assertTrue(f.is_available())
+
+    @patch.dict(os.environ, {}, clear=False)
+    @patch('src.config.get_config')
+    def test_is_available_false_without_key(self, mock_config):
+        os.environ.pop('FINNHUB_API_KEY', None)
+        mock_config.return_value = MagicMock(finnhub_api_key=None)
+        from data_provider.finnhub_fetcher import FinnhubFetcher
+        f = FinnhubFetcher()
+        self.assertFalse(f.is_available())
+
+
 class TestFinnhubFetcherRegistration(unittest.TestCase):
     """Test that FinnhubFetcher is registered in DataFetcherManager when key is present."""
 
